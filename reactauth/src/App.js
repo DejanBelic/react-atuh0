@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Auth0Lock from 'auth0-lock';
 import { Grid, Row, Col } from 'react-bootstrap';
+import Dashboard from './Components/Dashboard';
 import 'bootstrap/dist/css/bootstrap.css'
 
 
@@ -12,6 +13,13 @@ import Header from './Components/Header';
 
 
 class App extends Component {
+    constructor() {
+        super();
+        this.state = {
+            idToken: '',
+            profile: {}
+        }
+    }
 
     static defaultProps = {
         clientId: '1H7CHxyGSarPtwxbmGVJ4kttixlt5wsF',
@@ -61,14 +69,44 @@ class App extends Component {
         this.lock.show();
     }
 
+
+    logout() {
+        this.setState({
+            idToken: '',
+            profile: {}
+        }, () => {
+            localStorage.removeItem('idToken');
+            localStorage.removeItem('profile');
+        });
+    }
+
     render() {
+
+        let page;
+        if (this.state.idToken) {
+            page = <Dashboard
+                lock={this.lock}
+                idToken={this.state.idToken}
+                profile={this.state.profile}
+            />
+        }
+        else {
+            page = <Home />
+        }
+
         return (
             <div className="App">
-                <Header onLoginClick={this.showLock.bind(this)} />
+                <Header
+                    lock={this.lock}
+                    idToken={this.state.idToken}
+                    profile={this.state.profile}
+                    onLogoutClick={this.logout.bind(this)}
+                    onLoginClick={this.showLock.bind(this)}
+                />
                 <Grid>
                     <Row>
                         <Col xs={12} md={12}>
-                            <Home />
+                            {page}
                         </Col>
                     </Row>
                 </Grid>
