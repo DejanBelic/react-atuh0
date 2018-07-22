@@ -30,9 +30,31 @@ class App extends Component {
                     console.log(error);
                     return;
                 }
-                console.log(profile)
+                this.setData(authResult.accessToken, profile);
             });
-        })
+        });
+
+        this.getData();
+    }
+
+    // Set auth token and profile data to localstorage.
+    setData(accessToken, profile) {
+        localStorage.setItem('idToken', accessToken);
+        localStorage.setItem('profile', JSON.stringify(profile));
+        this.setState({
+            idToken: localStorage.getItem('idToken'),
+            profile: JSON.parse(localStorage.getItem('profile'))
+        });
+    }
+
+    // Every time application is rendering it will check localstorage and set the state if there is anything. Check for token and get profile data.
+    getData() {
+        if (localStorage.getItem('idToken') !== null) {
+            this.setState({
+                idToken: localStorage.getItem('idToken'),
+                profile: JSON.parse(localStorage.getItem('profile'))
+            });
+        }
     }
 
     showLock() {
